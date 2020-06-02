@@ -12,27 +12,57 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
 
-functions:
+  environment:
+    TODOS_TABLE: Todos-${self:provider.stage}
+    JSON_WEB_KEY_SET: https://hungapp-dev.auth0.com/.well-known/jwks.json
 
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
+  custom:
+    documentation:
+      api:
+        info:
+          version: v1.0.0
+          title: Todo App API
+          description: Serverless application for managing todos
+      models:
+        - name: CreateTodoRequest
+          contentType: application/json
+          schema: ${file(models/create-todo-request.json)}
+
+functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
 
-  # TODO: Configure this function
   GetTodos:
     handler: src/lambda/http/getTodos.handler
     events:
       - http:
           method: get
           path: todos
+          cors: true
+          authorizer: Auth
 
-  # TODO: Configure this function
-  GetTodos:
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
     events:
       - http:
           method: post
           path: todos
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new todo item
+            description: Create a new todo item
+            requestModels:
+              'application/json': CreateTodoRequest
 
   # TODO: Configure this function
   UpdateTodo:
@@ -60,4 +90,11 @@ functions:
 
 resources:
   Resources:
-    # TODO: Add any necessary AWS resources
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
