@@ -8,6 +8,7 @@ import { cors } from 'middy/middlewares'
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { createTodo } from '../../businessLogic/todos'
 import { getToken } from '../auth/auth0Authorizer'
+
 const logger = createLogger('create-todo')
 
 export const handler = middy(

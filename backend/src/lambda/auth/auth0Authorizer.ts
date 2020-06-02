@@ -60,7 +60,7 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
   return verify(token, signingKey, { algorithms: ['RS256'] }) as JwtPayload
 }
 
-function getToken(authHeader: string): string {
+export function getToken(authHeader: string): string {
   if (!authHeader) throw new Error('No authentication header')
 
   if (!authHeader.toLowerCase().startsWith('bearer '))
