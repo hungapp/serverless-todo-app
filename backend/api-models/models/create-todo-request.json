@@ -16,6 +16,6 @@
       "type": "string"
     }
   },
-  "required": ["name", "dueDate", "done"],
+  "required": ["name", "dueDate"],
   "additionalProperties": false
 }
