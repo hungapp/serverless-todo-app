@@ -33,8 +33,7 @@ export const handler = async (
       }
     }
   } catch (e) {
-    logger.error('User not authorized', { error: e.message })
-
+    logger.error('User not authorized', e.message)
     return {
       principalId: 'user',
       policyDocument: {

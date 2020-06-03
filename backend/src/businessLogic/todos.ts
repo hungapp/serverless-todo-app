@@ -6,8 +6,8 @@ import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { parseUserId } from '../auth/utils'
 const todoAccess = new TodoAccess()
 
-export async function getAllTodos(): Promise<TodoItem[]> {
-  return todoAccess.getAllTodos()
+export async function getTodos(userId): Promise<TodoItem[]> {
+  return todoAccess.getTodos(userId)
 }
 
 export async function createTodo(
