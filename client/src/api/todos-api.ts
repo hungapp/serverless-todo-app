@@ -31,7 +31,7 @@ export async function createTodo(
       }
     }
   )
-  return response.data.newItem
+  return response.data.item
 }
 
 export async function patchTodo(
