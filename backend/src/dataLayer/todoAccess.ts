@@ -2,6 +2,7 @@ import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { TodoItem } from '../models/TodoItem'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
+import { GetTodosResponse } from '../responses/GetTodosResponse'
 
 export class TodoAccess {
   constructor(
@@ -9,19 +10,27 @@ export class TodoAccess {
     private readonly todosTable = process.env.TODOS_TABLE
   ) {}
 
-  async getTodos(userId: TodoItem['userId']): Promise<TodoItem[]> {
-    const result = await this.docClient
-      .query({
-        TableName: this.todosTable,
-        KeyConditionExpression: 'userId = :userId',
-        ExpressionAttributeValues: {
-          ':userId': userId
-        }
-      })
-      .promise()
+  async getTodos(
+    userId: TodoItem['userId'],
+    limit: number,
+    nextKey: object
+  ): Promise<GetTodosResponse> {
+    const queryParams = {
+      TableName: this.todosTable,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      },
+      Limit: limit,
+      ExclusiveStartKey: nextKey
+    }
+    const result = await this.docClient.query(queryParams).promise()
 
-    const items = result.Items
-    return items as TodoItem[]
+    const response = {
+      items: result.Items,
+      lastEvaluatedKey: result.LastEvaluatedKey
+    }
+    return response
   }
 
   async createTodo(todo: TodoItem): Promise<TodoItem> {

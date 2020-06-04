@@ -4,13 +4,16 @@ import { TodoItem } from '../models/TodoItem'
 import { TodoAccess } from '../dataLayer/todoAccess'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
+import { GetTodosResponse } from '../responses/GetTodosResponse'
 
 const todoAccess = new TodoAccess()
 
 export async function getTodos(
-  userId: TodoItem['userId']
-): Promise<TodoItem[]> {
-  return todoAccess.getTodos(userId)
+  userId: TodoItem['userId'],
+  limit: number,
+  nextKey: object
+): Promise<GetTodosResponse> {
+  return await todoAccess.getTodos(userId, limit, nextKey)
 }
 
 export async function createTodo(
