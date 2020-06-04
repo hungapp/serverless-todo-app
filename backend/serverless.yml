@@ -108,6 +108,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
+        # include GetObject so signedURL can be use to retrieve uploaded image
         Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
       - Effect: Allow
         Action:

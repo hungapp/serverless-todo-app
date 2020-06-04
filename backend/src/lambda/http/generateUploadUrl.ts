@@ -20,13 +20,14 @@ export const handler = middy(
     logger.info('Generating upload url')
     const todoId = event.pathParameters.todoId
     try {
-      const url = getUploadUrl(todoId)
+      const uploadUrl = getUploadUrl(todoId)
       const userId = getUserId(event)
-      await attachUrl(userId, todoId, url)
+      const imageUrl = `https://${bucketName}.s3.amazonaws.com/${todoId}`
+      await attachUrl(userId, todoId, imageUrl)
       return {
         statusCode: 200,
         body: JSON.stringify({
-          uploadUrl: url
+          uploadUrl
         })
       }
     } catch (error) {
