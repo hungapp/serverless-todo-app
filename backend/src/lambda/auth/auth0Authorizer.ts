@@ -14,10 +14,10 @@ const jwksUrl = process.env.JSON_WEB_KEY_SET
 export const handler = async (
   event: CustomAuthorizerEvent
 ): Promise<CustomAuthorizerResult> => {
-  logger.info('Authorizing a user', event.authorizationToken)
+  logger.info('Authorizing a user')
 
   try {
-    const jwtToken: JwtPayload = await verifyToken(event.authorizationToken)
+    const jwtToken = await verifyToken(event.authorizationToken)
     logger.info('User was authorized', jwtToken)
     return {
       principalId: jwtToken.sub,
@@ -52,14 +52,14 @@ export const handler = async (
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader)
-  const jwt: Jwt = decode(token, { complete: true }) as Jwt
+  const jwt = decode(token, { complete: true }) as Jwt
   const { kid } = jwt.header
   const signingKey = await getKey(jwksUrl, kid)
 
   return verify(token, signingKey, { algorithms: ['RS256'] }) as JwtPayload
 }
 
-export function getToken(authHeader: string): string {
+function getToken(authHeader: string): string {
   if (!authHeader) throw new Error('No authentication header')
 
   if (!authHeader.toLowerCase().startsWith('bearer '))
@@ -71,20 +71,20 @@ export function getToken(authHeader: string): string {
   return token
 }
 
-async function getKey(jwksUri, kid) {
+async function getKey(jwksUri: string, kid: string): Promise<string> {
   try {
-    const key = (await getSigningKeyAsync(
-      jwksUri,
-      kid
-    )) as jwksClient.SigningKey
-    const signingKey = key.getPublicKey()
-    return signingKey
+    const signingKey = await getSigningKeyAsync(jwksUri, kid)
+    const publicSigningKey = signingKey.getPublicKey()
+    return publicSigningKey
   } catch (e) {
     throw new Error('Failed getting JWKS signing Key')
   }
 }
 
-function getSigningKeyAsync(jwksUri, kid) {
+function getSigningKeyAsync(
+  jwksUri: string,
+  kid: string
+): Promise<jwksClient.SigningKey> {
   const client = jwksClient({
     jwksUri
   })
