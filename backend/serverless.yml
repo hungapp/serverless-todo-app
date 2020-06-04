@@ -14,7 +14,7 @@ provider:
 
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
-    TOOD_ID_INDEX: TodoIdIndex
+    TOOD_DATE_INDEX: TodoDateIndex
     IMAGES_S3_BUCKET: serverless-todo-images-hung-${self:provider.stage}
     JSON_WEB_KEY_SET: https://hungapp-dev.auth0.com/.well-known/jwks.json
     SIGNED_URL_EXPIRATION: 300
@@ -145,16 +145,16 @@ resources:
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
-          - AttributeName: createdAt
+          - AttributeName: todoId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODOS_TABLE}
         LocalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.TOOD_ID_INDEX}
+          - IndexName: ${self:provider.environment.TOOD_DATE_INDEX}
             KeySchema:
               - AttributeName: userId
                 KeyType: HASH
-              - AttributeName: todoId
+              - AttributeName: createdAt
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index

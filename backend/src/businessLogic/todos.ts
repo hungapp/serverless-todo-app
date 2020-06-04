@@ -31,12 +31,28 @@ export async function createTodo(
 }
 
 export async function updateTodo(
+  userId: string,
   todoId: TodoItem['todoId'],
   updateTodoRequest: UpdateTodoRequest
 ): Promise<null> {
-  return await todoAccess.updateTodo(todoId, updateTodoRequest)
+  return await todoAccess.updateTodo(userId, todoId, updateTodoRequest)
 }
 
-export async function deleteTodo(todoId: TodoItem['todoId']): Promise<null> {
-  return await todoAccess.deleteTodo(todoId)
+export async function deleteTodo(
+  userId: string,
+  todoId: TodoItem['todoId']
+): Promise<null> {
+  return await todoAccess.deleteTodo(userId, todoId)
+}
+
+export async function attachUrl(
+  userId: string,
+  todoId: string,
+  url: string
+): Promise<null> {
+  try {
+    return await todoAccess.attachUrl(userId, todoId, url)
+  } catch (e) {
+    throw new Error('Failed attaching signed Url')
+  }
 }

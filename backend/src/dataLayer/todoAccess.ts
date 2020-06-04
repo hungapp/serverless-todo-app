@@ -35,6 +35,7 @@ export class TodoAccess {
   }
 
   async updateTodo(
+    userId: string,
     todoId: TodoItem['todoId'],
     data: UpdateTodoRequest
   ): Promise<null> {
@@ -42,14 +43,15 @@ export class TodoAccess {
       .update({
         TableName: this.todosTable,
         Key: {
-          todoId
+          userId: userId,
+          todoId: todoId
         },
-        UpdateExpression: 'set $n = :n, dueDate = :dd, done = :d ',
+        UpdateExpression: 'SET #n = :n, dueDate = :dd, done = :d ',
         ExpressionAttributeNames: {
-          $n: 'name'
+          '#n': 'name'
         },
         ExpressionAttributeValues: {
-          $n: data.name,
+          ':n': data.name,
           ':dd': data.dueDate,
           ':d': data.done
         }
@@ -58,12 +60,30 @@ export class TodoAccess {
     return null
   }
 
-  async deleteTodo(todoId: TodoItem['todoId']): Promise<null> {
+  async deleteTodo(userId: string, todoId: TodoItem['todoId']): Promise<null> {
     await this.docClient
       .delete({
         TableName: this.todosTable,
         Key: {
+          userId,
           todoId
+        }
+      })
+      .promise()
+    return null
+  }
+
+  async attachUrl(userId: string, todoId: string, url: string): Promise<null> {
+    await this.docClient
+      .update({
+        TableName: this.todosTable,
+        Key: {
+          userId: userId,
+          todoId: todoId
+        },
+        UpdateExpression: 'SET attachmentUrl = :url',
+        ExpressionAttributeValues: {
+          ':url': url
         }
       })
       .promise()
