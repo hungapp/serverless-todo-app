@@ -50,9 +50,5 @@ export async function attachUrl(
   todoId: string,
   url: string
 ): Promise<null> {
-  try {
-    return await todoAccess.attachUrl(userId, todoId, url)
-  } catch (e) {
-    throw new Error('Failed attaching signed Url')
-  }
+  return await todoAccess.attachUrl(userId, todoId, url)
 }

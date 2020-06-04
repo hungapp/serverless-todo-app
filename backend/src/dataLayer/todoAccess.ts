@@ -73,7 +73,11 @@ export class TodoAccess {
     return null
   }
 
-  async attachUrl(userId: string, todoId: string, url: string): Promise<null> {
+  async attachUrl(
+    userId: string,
+    todoId: string,
+    attachmentUrl: string
+  ): Promise<null> {
     await this.docClient
       .update({
         TableName: this.todosTable,
@@ -81,10 +85,8 @@ export class TodoAccess {
           userId: userId,
           todoId: todoId
         },
-        UpdateExpression: 'SET attachmentUrl = :url',
-        ExpressionAttributeValues: {
-          ':url': url
-        }
+        UpdateExpression: 'set attachmentUrl = :url',
+        ExpressionAttributeValues: { ':url': attachmentUrl }
       })
       .promise()
     return null
